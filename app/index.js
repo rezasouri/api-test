@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import http from "http";
 import { error } from "console";
 import crypt from "crypto";
+import fileUpload from "express-fileupload";
 const app = express();
 let users = [];
 let data = [
@@ -33,9 +34,25 @@ function App() {
   const server = http.createServer(app);
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(
+    fileUpload({
+      createParentPath: true,
+    })
+  );
 
   app.get("/", (req, res) => {
     res.status(200).json({ data: data });
+  });
+  app.post("/upload", (req, res) => {
+    if (
+      req.files.image.mimetype === "image/png" ||
+      req.files.image.mimetype === "image/jpg"
+    ) {
+      req.files.image.mv("./upload/" + req.files.image.name);
+      res.status(201).json("ok");
+    }else{
+      res.status(400).json('not jpf or png')
+    }
   });
   app.get("/paginate", (req, res) => {
     if (req.query.page == 1) {
