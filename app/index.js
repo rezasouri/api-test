@@ -37,6 +37,56 @@ function App() {
   app.get("/", (req, res) => {
     res.status(200).json({ data: data });
   });
+  app.get("/paginate", (req, res) => {
+    if (req.query.page == 1) {
+      res.status(201).json({
+        current_page: req.query.page,
+        count: data.length,
+        last_page: 2,
+        data: [
+          {
+            id: 1,
+            title: "sadelauef",
+            price: "900,000",
+            image:
+              "https://scontent-hel3-1.xx.fbcdn.net/v/t1.6435-9/120747573_2465981907038822_7080171589313155317_n.jpg?stp=cp0_dst-jpg_e15_p320x320_q65&_nc_cat=109&ccb=1-7&_nc_sid=110474&_nc_ohc=049BJ40NJLIAX-Yn0BT&_nc_ht=scontent-hel3-1.xx&oh=00_AfDzg_hk4T6OknsYlh6CvzkAQJfGpwAj31C_Azbfaza6VA&oe=64E8850D",
+          },
+          {
+            id: 2,
+            title: "ghasempor",
+            price: "600,000",
+            image:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr_1LDcovCTCasVEOFICGIWmoijauwTV5Ddg&usqp=CAU",
+          },
+        ],
+      });
+      return;
+    } else if (req.query.page == 2) {
+      res.status(201).json({
+        current_page: req.query.page,
+        count: data.length,
+        last_page: 2,
+        data: [
+          {
+            id: 3,
+            title: "yazdani",
+            price: "400,000",
+            image:
+              "https://yt3.googleusercontent.com/ehnCIyPERxtG__vRAo0GY4VaaeG7HZswoPAchFsHuu0TqMfxxIpBG3USrkaL5A9u-TghE2a07g=s900-c-k-c0x00ffffff-no-rj",
+          },
+        ],
+      });
+      return;
+    } else {
+      res.status(201).json({
+        current_page: req.query.page,
+        count: data.length,
+        last_page: 2,
+        data: [],
+      });
+      return;
+    }
+  });
   app.post("/add", (req, res) => {
     try {
       var errors = [];
