@@ -50,11 +50,29 @@ function App() {
     ) {
       req.files.image.mv("./upload/" + req.files.image.name);
       res.status(201).json("ok");
-    }else{
-      res.status(400).json('not jpf or png')
+    } else {
+      res.status(400).json("not jpf or png");
     }
   });
   app.get("/paginate", (req, res) => {
+    var isLogin = false;
+    var [token_type, token] =
+      req.header("Authorization") && req.header("Authorization").length > 0
+        ? req.header("Authorization").split(" ")
+        : ["", ""];
+    if (token == "" || token_type == "") {
+      isLogin = false;
+    } else {
+      users.map((user) => {
+        if (user.token == token && user.token_type == token_type) {
+          isLogin = true;
+        }
+      });
+    }
+    if (!isLogin) {
+      res.status(401).json("not authorize");
+    }
+
     if (req.query.page == 1) {
       res.status(201).json({
         current_page: req.query.page,
@@ -195,6 +213,7 @@ function App() {
         email: req.body.email,
         password: req.body.password,
         token: "",
+        token_type: "",
       });
       console.log(users);
       res.status(201).json(req.body);
@@ -232,6 +251,7 @@ function App() {
           user.password === req.body.password
         ) {
           user.token = token;
+          user.token_type = "Bearer";
           success = true;
         }
       });
@@ -240,10 +260,20 @@ function App() {
         return;
       }
 
-      res.status(201).json({ token: token, tokenType: "bearer" });
+      res.status(201).json({ token: token, token_type: "Bearer" });
     } catch (e) {
       res.status(500).json([]);
     }
+  });
+  app.get("/profile", (req, res) => {
+    var [token_type, token] = req.header("Authorization").split(" ");
+    users.map((user) => {
+      if (user.token == token && user.token_type == token_type) {
+        res.status(200).json({ user: user });
+        return;
+      }
+    });
+    res.status(401).json("not Authorize");
   });
   server.listen(3000, () => {
     console.log("server running on 5000 port");
